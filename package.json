@@ -1,0 +1,12 @@
+{
+  "name": "meeting-followupper",
+  "version": "1.0.0",
+  "main": "main.js",
+  "repository": "git@github.com:garvsl/meeting-followupper.git",
+  "author": "garvsl <garvsehgal7@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "electron": "^31.2.1"
+  }
+}
