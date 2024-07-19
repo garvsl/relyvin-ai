@@ -8,5 +8,8 @@
   "private": true,
   "devDependencies": {
     "electron": "^31.2.1"
+  },
+  "scripts": {
+    "start": "electron ."
   }
 }
