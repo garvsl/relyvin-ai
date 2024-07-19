@@ -5,20 +5,16 @@ import 'tailwindcss/tailwind.css';
 function Hello() {
   return (
     <div>
-      <h1>Meeting Follow-Upper</h1>
+      <h1 className="text-4xl items-center  text-black">
+        Meeting Follow-Upper
+      </h1>
       <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button className="flex gap-2" type="button">
-            <span role="img" aria-label="books">
-              ⏺
-            </span>
-            Start Recording
-          </button>
-        </a>
+        <button className="flex gap-2 bg-blue-500 p-4" type="button">
+          <span className="mr-2" role="img" aria-label="books">
+            ⏺
+          </span>
+          Start Recording
+        </button>
       </div>
     </div>
   );
