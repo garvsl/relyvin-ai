@@ -1,4 +1,4 @@
-const { BrowserWindow, app } = require("electron");
+const { BrowserWindow, app, ipcMain } = require("electron");
 const { Tray, Menu, nativeImage } = require("electron/main");
 
 const createWindow = () => {
@@ -10,12 +10,48 @@ const createWindow = () => {
     title: "",
     width: 800,
     height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
   });
 
   win.loadFile("index.html");
+
+  ipcMain.on("re-render", () => {
+    win.reload();
+  });
 };
 
 let tray;
+
+const isMac = process.platform === "darwin";
+
+const template = [
+  ...(isMac
+    ? [
+        {
+          label: "Start Recording",
+          click: () => {
+            console.log("Record button clicked!");
+          },
+        },
+
+        {
+          label: "Stop Recording",
+          click: () => {
+            console.log("Stop Record button clicked!");
+          },
+        },
+      ]
+    : []),
+
+  { type: "separator" },
+  {
+    label: `Quit ${app.name}`,
+    role: "quit",
+  },
+];
 
 app.whenReady().then(() => {
   const icon = nativeImage.createFromDataURL(
@@ -23,15 +59,22 @@ app.whenReady().then(() => {
   );
   tray = new Tray(icon);
 
-  const contextMenu = Menu.buildFromTemplate([
-    { label: "Item1", type: "radio" },
-    { label: "Item2", type: "radio" },
-    { label: "Item3", type: "radio", checked: true },
-    { label: "Item4", type: "radio" },
-  ]);
+  const contextMenu = Menu.buildFromTemplate(template);
 
   tray.setToolTip("This is my application.");
   tray.setContextMenu(contextMenu);
 });
 
 app.whenReady().then(createWindow);
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
