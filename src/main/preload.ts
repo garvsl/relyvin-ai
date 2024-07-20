@@ -24,6 +24,9 @@ const electronHandler = {
     getTranscripts: () => {
       return ipcRenderer.invoke('getTranscripts');
     },
+    readTranscript: (name: string) => {
+      return ipcRenderer.invoke('readTranscript', name);
+    },
   },
 };
 

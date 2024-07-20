@@ -13,7 +13,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { homedir } from 'os';
-import { ensureDir, readdir, writeFile } from 'fs-extra';
+import { ensureDir, readdir, readFile, writeFile } from 'fs-extra';
 import { isEmpty } from 'lodash';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -57,6 +57,24 @@ ipcMain.handle('getTranscripts', async () => {
   }
   console.log(files);
   return files;
+});
+
+ipcMain.handle('readTranscript', async (_, args) => {
+  const route = `${homedir()}/Desktop/Projects/meeting-followupper/src/store`;
+
+  await ensureDir(route);
+
+  const transcriptLocation = `${route}/${args}`;
+
+  console.log(transcriptLocation);
+
+  const transcript = await readFile(transcriptLocation, {
+    encoding: 'utf8',
+  });
+
+  console.log(transcript);
+
+  return transcript;
 });
 
 // ipcMain.handle('getRoot', (_, ...args: any) => getRoot(...args));
