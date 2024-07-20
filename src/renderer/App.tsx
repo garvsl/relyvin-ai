@@ -21,9 +21,30 @@ function Home() {
         const storeScreens = theScreens.trim().split(' ');
         console.log(storeScreens);
         setScreens(storeScreens);
+        setScreen(storeScreens[0]);
       }
     })();
   }, []);
+
+  const handleRecord = async () => {
+    setRecording((e) => !e);
+    console.log('recording');
+    if (recording) {
+      const vidPath = await window.electron.ipcRenderer.stopRecording();
+      alert(`Recording saved to: ${vidPath}`);
+    } else {
+      const options = {
+        screenId: Number(screens[0]),
+        framesPerSecond: 30,
+        showCursor: true,
+        destination:
+          '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/src/store/audio/recording1.mp4',
+        highlightClicks: false,
+        videoCodec: 'h264',
+      };
+      await window.electron.ipcRenderer.startRecording(options);
+    }
+  };
 
   return (
     <div className="flex w-[100vw] h-[100vh]">
@@ -61,7 +82,7 @@ function Home() {
                 <select className="bg-gray-100 rounded-full text-black p-2 m-2">
                   {screens.map((s) => {
                     return (
-                      <option key={s} value={s}>
+                      <option onClick={() => setScreen(s)} key={s} value={s}>
                         {s}
                       </option>
                     );
@@ -70,7 +91,7 @@ function Home() {
                 <button
                   disabled={screen == null}
                   onClick={async () => {
-                    setRecording((e) => !e);
+                    handleRecord();
                   }}
                   className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
                   type="button"
