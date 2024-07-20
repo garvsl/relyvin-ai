@@ -15,6 +15,7 @@ import log from 'electron-log';
 import { homedir } from 'os';
 import { ensureDir, readdir, readFile, writeFile } from 'fs-extra';
 import { isEmpty } from 'lodash';
+import { execFile } from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -76,6 +77,40 @@ ipcMain.handle('readTranscript', async (_, args) => {
 
   return transcript;
 });
+
+ipcMain.handle('list-screens', async () => {
+  const screencapturekitPath =
+    '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/node_modules/screencapturekit/screencapturekit';
+
+  return new Promise((resolve, reject) => {
+    execFile(
+      screencapturekitPath,
+      ['list', 'screens'],
+      (error, stdout, stderr) => {
+        if (error) {
+          if (
+            stderr.includes(
+              'The user declined TCCs for application, window, display capture',
+            )
+          ) {
+            resolve({ error: 'User declined screen capture permissions' });
+          } else {
+            reject(`exec error: ${error}`);
+          }
+        } else {
+          try {
+            resolve(JSON.parse(stdout));
+          } catch {
+            resolve(stdout);
+          }
+        }
+      },
+    );
+  });
+});
+
+// Setup record and save file, and play file
+// Blackhole integration
 
 // ipcMain.handle('getRoot', (_, ...args: any) => getRoot(...args));
 
