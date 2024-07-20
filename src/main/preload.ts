@@ -1,11 +1,6 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
-import {
-  contextBridge,
-  desktopCapturer,
-  ipcRenderer,
-  IpcRendererEvent,
-} from 'electron';
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels = 'ipc-example';
 
@@ -34,6 +29,12 @@ const electronHandler = {
     },
     listScreens: () => {
       return ipcRenderer.invoke('list-screens');
+    },
+    startRecording: (options: any) => {
+      return ipcRenderer.invoke('start-recording', options);
+    },
+    stopRecording: () => {
+      return ipcRenderer.invoke('stop-recording');
     },
     getSources: () => {
       return ipcRenderer.invoke('get-sources');
