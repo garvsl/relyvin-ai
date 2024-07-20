@@ -12,6 +12,9 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { homedir } from 'os';
+import { ensureDir, readdir, writeFile } from 'fs-extra';
+import { isEmpty } from 'lodash';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -30,6 +33,33 @@ ipcMain.on('ipc-example', async (event, arg) => {
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
+
+ipcMain.handle('getTranscripts', async () => {
+  const route = `${homedir()}/Desktop/Projects/meeting-followupper/src/store`;
+  // /${arg}.txt
+  await ensureDir(route);
+
+  const fileNames = await readdir(route, {
+    encoding: 'utf8',
+    withFileTypes: false,
+  });
+
+  const files = fileNames.filter((file) => file.endsWith('.txt'));
+
+  if (isEmpty(files)) {
+    console.info('No notes found, creating a welcome note');
+
+    await writeFile(`${route}/${'test'}.txt`, 'hello', {
+      encoding: 'utf8',
+    });
+
+    files.push('test.txt');
+  }
+  console.log(files);
+  return files;
+});
+
+// ipcMain.handle('getRoot', (_, ...args: any) => getRoot(...args));
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
