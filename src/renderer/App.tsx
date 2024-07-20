@@ -7,10 +7,22 @@ function Home() {
   const [transcripts, setTranscripts] = useState([]);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [recording, setRecording] = useState(false);
+  const [screens, setScreens] = useState([]);
+  const [screen, setScreen] = useState(null);
 
   useEffect(() => {
     (async () => {
       setTranscripts(await window.electron.ipcRenderer.getTranscripts());
+      const theScreens = await window.electron.ipcRenderer.listScreens();
+
+      if (theScreens && theScreens.error) {
+        alert(theScreens.error);
+        setScreens([]);
+      } else {
+        const storeScreens = theScreens.trim().split(' ');
+        console.log(storeScreens);
+        setScreens(storeScreens);
+      }
     })();
   }, []);
 
@@ -45,18 +57,36 @@ function Home() {
             Meeting Follow-Upper
           </h1>
           <div className="Hello">
-            <button
-              onClick={async () => {
-                setRecording((e) => !e);
-              }}
-              className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
-              type="button"
-            >
-              <span className="mr-2" role="img" aria-label="books">
-                ⏺
-              </span>
-              {recording ? 'Stop Recording' : 'Start Recording'}
-            </button>
+            {screens && screens.length > 0 ? (
+              <>
+                <select className="bg-gray-100 rounded-full text-black p-2 m-2">
+                  {screens.map((s) => {
+                    return (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    );
+                  })}
+                </select>
+                <button
+                  disabled={screen == null}
+                  onClick={async () => {
+                    setRecording((e) => !e);
+                  }}
+                  className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
+                  type="button"
+                >
+                  <span className="mr-2" role="img" aria-label="books">
+                    ⏺
+                  </span>
+                  {recording ? 'Stop Recording' : 'Start Recording'}
+                </button>
+              </>
+            ) : (
+              <div>
+                <p className="text-black">No screens found</p>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col items-center mt-8">
