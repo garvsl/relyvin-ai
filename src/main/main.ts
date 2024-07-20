@@ -113,6 +113,55 @@ ipcMain.handle('get-sources', async () => {
   return desktopCapturer.getSources({ types: ['screen', 'window'] });
 });
 
+ipcMain.handle('start-recording', async (event, options) => {
+  const screencapturekitPath =
+    '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/node_modules/screencapturekit/screencapturekit';
+
+  const destinationUrl = new URL(`file://${options.destination}`);
+  console.log(destinationUrl.toString());
+  const recordingOptions = {
+    ...options,
+    destination: destinationUrl.toString(),
+  };
+
+  const args = ['record', JSON.stringify(recordingOptions)];
+  return new Promise((resolve, reject) => {
+    execFile(screencapturekitPath, args, (error, stdout, stderr) => {
+      if (error) {
+        reject(`exec error: ${error}`);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+});
+
+ipcMain.handle('stop-recording', async () => {
+  const screencapturekitPath =
+    '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/node_modules/screencapturekit/screencapturekit';
+  const args = ['stop'];
+  return new Promise((resolve, reject) => {
+    execFile(screencapturekitPath, args, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        console.error(`stderr: ${stderr}`);
+        reject(`exec error: ${error}`);
+      } else {
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+
+        try {
+          const result = JSON.parse(stdout);
+          resolve(result);
+        } catch (e) {
+          console.error(`Failed to parse JSON from stdout: ${stdout}`);
+          // Return the raw stdout if JSON parsing fails
+          resolve(stdout.trim());
+        }
+      }
+    });
+  });
+});
 // Setup record and save file, and play file
 // Blackhole integration
 
