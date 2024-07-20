@@ -14,7 +14,6 @@ function Home() {
     (async () => {
       setTranscripts(await window.electron.ipcRenderer.getTranscripts());
       const theScreens = await window.electron.ipcRenderer.listScreens();
-
       if (theScreens && theScreens.error) {
         alert(theScreens.error);
         setScreens([]);

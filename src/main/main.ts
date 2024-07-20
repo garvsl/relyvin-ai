@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, desktopCapturer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { homedir } from 'os';
@@ -107,6 +107,10 @@ ipcMain.handle('list-screens', async () => {
       },
     );
   });
+});
+
+ipcMain.handle('get-sources', async () => {
+  return desktopCapturer.getSources({ types: ['screen', 'window'] });
 });
 
 // Setup record and save file, and play file
