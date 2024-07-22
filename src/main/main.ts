@@ -1,18 +1,9 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { homedir } from 'os';
 import { ensureDir, readdir, readFile, writeFile } from 'fs-extra';
 import { isEmpty } from 'lodash';
 import fs from 'fs';
@@ -36,7 +27,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 ipcMain.handle('getTranscripts', async () => {
-  const route = `${homedir()}/Desktop/Projects/meeting-followupper/src/store`;
+  const route = path.resolve(__dirname, '..', 'store');
   // /${arg}.txt
   await ensureDir(route);
 
@@ -61,7 +52,7 @@ ipcMain.handle('getTranscripts', async () => {
 });
 
 ipcMain.handle('readTranscript', async (_, args) => {
-  const route = `${homedir()}/Desktop/Projects/meeting-followupper/src/store`;
+  const route = path.resolve(__dirname, '..', 'store');
 
   await ensureDir(route);
 
@@ -80,7 +71,7 @@ ipcMain.handle('readTranscript', async (_, args) => {
 
 ipcMain.handle('save-audio', async (_, buffer) => {
   try {
-    const route = `${homedir()}/Desktop/Projects/meeting-followupper/src/store/audio`;
+    const route = path.resolve(__dirname, '..', 'store', 'audio');
     fs.mkdirSync(route, { recursive: true });
     const fileName = `audio_${Date.now()}.webm`;
     const filePath = path.join(route, fileName);
