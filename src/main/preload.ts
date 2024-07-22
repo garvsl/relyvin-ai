@@ -27,15 +27,6 @@ const electronHandler = {
     readTranscript: (name: string) => {
       return ipcRenderer.invoke('readTranscript', name);
     },
-    listScreens: () => {
-      return ipcRenderer.invoke('list-screens');
-    },
-    startRecording: (options: any) => {
-      return ipcRenderer.invoke('start-recording', options);
-    },
-    stopRecording: () => {
-      return ipcRenderer.invoke('stop-recording');
-    },
   },
 };
 

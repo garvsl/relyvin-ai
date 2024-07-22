@@ -78,29 +78,6 @@ ipcMain.handle('readTranscript', async (_, args) => {
   return transcript;
 });
 
-const sck = new ScreenCaptureKit();
-
-ipcMain.handle('list-screens', async () => {
-  const screens = await sck.listScreens();
-  return screens;
-});
-
-ipcMain.handle('start-recording', async (event, options) => {
-  const destinationUrl = new URL(`file://${options.destination}`);
-  console.log(destinationUrl.toString());
-  const recordingOptions = {
-    ...options,
-    destination: destinationUrl.toString(),
-  };
-
-  await sck.startRecording(recordingOptions);
-});
-
-ipcMain.handle('stop-recording', async () => {
-  const videoPath = await sck.stopRecording();
-  return videoPath;
-});
-
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
