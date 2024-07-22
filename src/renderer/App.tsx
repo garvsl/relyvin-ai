@@ -7,8 +7,8 @@ function Home() {
   const [transcripts, setTranscripts] = useState([]);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [recording, setRecording] = useState(false);
-  const [screens, setScreens] = useState([]);
-  const [screen, setScreen] = useState(null);
+  const [screens, setScreens] = useState<any>([]);
+  const [screen, setScreen] = useState<any>(0);
 
   useEffect(() => {
     (async () => {
@@ -18,10 +18,9 @@ function Home() {
         alert(theScreens.error);
         setScreens([]);
       } else {
-        const storeScreens = theScreens.trim().split(' ');
-        console.log(storeScreens);
-        setScreens(storeScreens);
-        setScreen(storeScreens[0]);
+        console.log(theScreens);
+        setScreens(theScreens);
+        setScreen(theScreens[0]);
       }
     })();
   }, []);
@@ -34,11 +33,11 @@ function Home() {
       alert(`Recording saved to: ${vidPath}`);
     } else {
       const options = {
-        screenId: Number(screens[0]),
+        screenId: Number(screen),
         framesPerSecond: 30,
         showCursor: true,
         destination:
-          '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/src/store/audio/recording1.mp4',
+          '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/src/store/audio/recording2.mp4',
         highlightClicks: false,
         videoCodec: 'h264',
       };
@@ -79,11 +78,14 @@ function Home() {
           <div className="Hello">
             {screens && screens.length > 0 ? (
               <>
-                <select className="bg-gray-100 rounded-full text-black p-2 m-2">
-                  {screens.map((s) => {
+                <select
+                  onChange={(e) => setScreen(e.target.value)}
+                  className="bg-gray-100 rounded-full text-black p-2 m-2"
+                >
+                  {screens.map((s: any) => {
                     return (
-                      <option onClick={() => setScreen(s)} key={s} value={s}>
-                        {s}
+                      <option key={s.process_id} value={s.process_id}>
+                        {s.name}
                       </option>
                     );
                   })}
