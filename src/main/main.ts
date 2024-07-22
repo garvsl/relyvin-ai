@@ -9,13 +9,13 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, desktopCapturer } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { homedir } from 'os';
 import { ensureDir, readdir, readFile, writeFile } from 'fs-extra';
 import { isEmpty } from 'lodash';
-import { execFile } from 'child_process';
+import ScreenCaptureKit from 'screencapturekit-node-wrapper';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -78,45 +78,14 @@ ipcMain.handle('readTranscript', async (_, args) => {
   return transcript;
 });
 
+const sck = new ScreenCaptureKit();
+
 ipcMain.handle('list-screens', async () => {
-  const screencapturekitPath =
-    '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/node_modules/screencapturekit/screencapturekit';
-
-  return new Promise((resolve, reject) => {
-    execFile(
-      screencapturekitPath,
-      ['list', 'screens'],
-      (error, stdout, stderr) => {
-        if (error) {
-          if (
-            stderr.includes(
-              'The user declined TCCs for application, window, display capture',
-            )
-          ) {
-            resolve({ error: 'User declined screen capture permissions' });
-          } else {
-            reject(`exec error: ${error}`);
-          }
-        } else {
-          try {
-            resolve(JSON.parse(stdout));
-          } catch {
-            resolve(stdout);
-          }
-        }
-      },
-    );
-  });
-});
-
-ipcMain.handle('get-sources', async () => {
-  return desktopCapturer.getSources({ types: ['screen', 'window'] });
+  const screens = await sck.listScreens();
+  return screens;
 });
 
 ipcMain.handle('start-recording', async (event, options) => {
-  const screencapturekitPath =
-    '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/node_modules/screencapturekit/screencapturekit';
-
   const destinationUrl = new URL(`file://${options.destination}`);
   console.log(destinationUrl.toString());
   const recordingOptions = {
@@ -124,48 +93,13 @@ ipcMain.handle('start-recording', async (event, options) => {
     destination: destinationUrl.toString(),
   };
 
-  const args = ['record', JSON.stringify(recordingOptions)];
-  return new Promise((resolve, reject) => {
-    execFile(screencapturekitPath, args, (error, stdout, stderr) => {
-      if (error) {
-        reject(`exec error: ${error}`);
-      } else {
-        resolve(stdout);
-      }
-    });
-  });
+  await sck.startRecording(recordingOptions);
 });
 
 ipcMain.handle('stop-recording', async () => {
-  const screencapturekitPath =
-    '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/node_modules/screencapturekit/screencapturekit';
-  const args = ['stop'];
-  return new Promise((resolve, reject) => {
-    execFile(screencapturekitPath, args, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        console.error(`stderr: ${stderr}`);
-        reject(`exec error: ${error}`);
-      } else {
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
-
-        try {
-          const result = JSON.parse(stdout);
-          resolve(result);
-        } catch (e) {
-          console.error(`Failed to parse JSON from stdout: ${stdout}`);
-          // Return the raw stdout if JSON parsing fails
-          resolve(stdout.trim());
-        }
-      }
-    });
-  });
+  const videoPath = await sck.stopRecording();
+  return videoPath;
 });
-// Setup record and save file, and play file
-// Blackhole integration
-
-// ipcMain.handle('getRoot', (_, ...args: any) => getRoot(...args));
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');

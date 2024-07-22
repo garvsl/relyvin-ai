@@ -36,9 +36,6 @@ const electronHandler = {
     stopRecording: () => {
       return ipcRenderer.invoke('stop-recording');
     },
-    getSources: () => {
-      return ipcRenderer.invoke('get-sources');
-    },
   },
 };
 
