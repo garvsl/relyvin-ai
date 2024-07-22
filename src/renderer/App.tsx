@@ -7,42 +7,63 @@ function Home() {
   const [transcripts, setTranscripts] = useState([]);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [recording, setRecording] = useState(false);
-  const [screens, setScreens] = useState<any>([]);
+  const [screens, setScreens] = useState<any>([0]);
   const [screen, setScreen] = useState<any>(0);
+  const [chunks, setChunks] = useState<any>([]);
+  const [mediaRecorder, setMediaRecorder] = useState<any>(null);
+  const [audioBuffers, setAudioBuffers] = useState<any>([]);
 
   useEffect(() => {
     (async () => {
       setTranscripts(await window.electron.ipcRenderer.getTranscripts());
-      const theScreens = await window.electron.ipcRenderer.listScreens();
-      if (theScreens && theScreens.error) {
-        alert(theScreens.error);
-        setScreens([]);
-      } else {
-        console.log(theScreens);
-        setScreens(theScreens);
-        setScreen(theScreens[0]);
-      }
     })();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      audioBuffers.forEach(URL.revokeObjectURL);
+    };
+  }, [audioBuffers]);
+
   const handleRecord = async () => {
-    setRecording((e) => !e);
-    console.log('recording');
+    let audioPromise = null;
+    console.log('is ', recording);
     if (recording) {
-      const vidPath = await window.electron.ipcRenderer.stopRecording();
-      alert(`Recording saved to: ${vidPath}`);
+      try {
+        await mediaRecorder.stop();
+
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const audioURL = URL.createObjectURL(blob);
+
+        setMediaRecorder(null);
+        setAudioBuffers((prev) => [...prev, audioURL]);
+        setChunks([]);
+      } catch (e) {
+        console.log(e);
+      }
     } else {
-      const options = {
-        screenId: Number(screen),
-        framesPerSecond: 30,
-        showCursor: true,
-        destination:
-          '/Users/goofyahhgarv/Desktop/Projects/meeting-followupper/src/store/audio/recording2.mp4',
-        highlightClicks: false,
-        videoCodec: 'h264',
+      setMediaRecorder(null);
+      const constraints = {
+        audio: {
+          // echoCancellation: true,
+          // noiseSuppression: true,
+          sampleRate: 44100,
+        },
       };
-      await window.electron.ipcRenderer.startRecording(options);
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        const mr = new MediaRecorder(stream);
+        mr.ondataavailable = (event) => {
+          setChunks((chunk) => [...chunk, event.data]);
+        };
+        mr.start(1000);
+        setMediaRecorder(mr);
+      } catch (e) {
+        console.log(e);
+      }
     }
+    setRecording((e) => !e);
   };
 
   return (
@@ -93,7 +114,8 @@ function Home() {
                 <button
                   disabled={screen == null}
                   onClick={async () => {
-                    handleRecord();
+                    await handleRecord();
+                    // handleAudioRecord();
                   }}
                   className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
                   type="button"
@@ -110,6 +132,14 @@ function Home() {
               </div>
             )}
           </div>
+          {audioBuffers.length > 0 && (
+            <div>
+              {audioBuffers.map((audioURL, index) => (
+                // eslint-disable-next-line jsx-a11y/media-has-caption
+                <audio key={index} controls src={audioURL} className="mt-4" />
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex flex-col items-center mt-8">
           <textarea
