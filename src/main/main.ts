@@ -15,6 +15,7 @@ import log from 'electron-log';
 import { homedir } from 'os';
 import { ensureDir, readdir, readFile, writeFile } from 'fs-extra';
 import { isEmpty } from 'lodash';
+import fs from 'fs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -75,6 +76,22 @@ ipcMain.handle('readTranscript', async (_, args) => {
   console.log(transcript);
 
   return transcript;
+});
+
+ipcMain.handle('save-audio', async (_, buffer) => {
+  try {
+    const route = `${homedir()}/Desktop/Projects/meeting-followupper/src/store/audio`;
+    fs.mkdirSync(route, { recursive: true });
+    const fileName = `audio_${Date.now()}.webm`;
+    const filePath = path.join(route, fileName);
+
+    const newBuffer = Buffer.from(buffer);
+    fs.writeFileSync(filePath, newBuffer);
+    return { success: true, path: filePath };
+  } catch (error: any) {
+    console.error('Error saving audio:', error);
+    return { success: false, error: error.message };
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {

@@ -31,8 +31,16 @@ function Home() {
         await mediaRecorder.stop();
 
         const blob = new Blob(chunks, { type: 'audio/webm' });
-        const audioURL = URL.createObjectURL(blob);
+        const arrayBuffer = await blob.arrayBuffer();
 
+        const result = await window.electron.ipcRenderer.saveAudio(arrayBuffer);
+        if (result.success) {
+          console.log('Audio saved to:', result.path);
+        } else {
+          console.error('Failed to save audio:', result.error);
+        }
+
+        const audioURL = URL.createObjectURL(blob);
         setMediaRecorder(null);
         setAudioBuffers((prev) => [...prev, audioURL]);
         setChunks([]);
@@ -96,7 +104,7 @@ function Home() {
           </h1>
           <div className="Hello">
             <button
-              disabled={screen == null}
+              // disabled={screen == null}
               onClick={async () => {
                 await handleRecord();
                 // handleAudioRecord();

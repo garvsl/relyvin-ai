@@ -27,6 +27,9 @@ const electronHandler = {
     readTranscript: (name: string) => {
       return ipcRenderer.invoke('readTranscript', name);
     },
+    saveAudio: (buffer: any) => {
+      return ipcRenderer.invoke('save-audio', buffer);
+    },
   },
 };
 
