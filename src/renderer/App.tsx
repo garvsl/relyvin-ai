@@ -7,8 +7,6 @@ function Home() {
   const [transcripts, setTranscripts] = useState([]);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [recording, setRecording] = useState(false);
-  const [screens, setScreens] = useState<any>([0]);
-  const [screen, setScreen] = useState<any>(0);
   const [chunks, setChunks] = useState<any>([]);
   const [mediaRecorder, setMediaRecorder] = useState<any>(null);
   const [audioBuffers, setAudioBuffers] = useState<any>([]);
@@ -97,40 +95,20 @@ function Home() {
             Meeting Follow-Upper
           </h1>
           <div className="Hello">
-            {screens && screens.length > 0 ? (
-              <>
-                <select
-                  onChange={(e) => setScreen(e.target.value)}
-                  className="bg-gray-100 rounded-full text-black p-2 m-2"
-                >
-                  {screens.map((s: any) => {
-                    return (
-                      <option key={s.process_id} value={s.process_id}>
-                        {s.name}
-                      </option>
-                    );
-                  })}
-                </select>
-                <button
-                  disabled={screen == null}
-                  onClick={async () => {
-                    await handleRecord();
-                    // handleAudioRecord();
-                  }}
-                  className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
-                  type="button"
-                >
-                  <span className="mr-2" role="img" aria-label="books">
-                    ⏺
-                  </span>
-                  {recording ? 'Stop Recording' : 'Start Recording'}
-                </button>
-              </>
-            ) : (
-              <div>
-                <p className="text-black">No screens found</p>
-              </div>
-            )}
+            <button
+              disabled={screen == null}
+              onClick={async () => {
+                await handleRecord();
+                // handleAudioRecord();
+              }}
+              className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
+              type="button"
+            >
+              <span className="mr-2" role="img" aria-label="books">
+                ⏺
+              </span>
+              {recording ? 'Stop Recording' : 'Start Recording'}
+            </button>
           </div>
           {audioBuffers.length > 0 && (
             <div>
