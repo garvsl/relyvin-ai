@@ -26,7 +26,6 @@ function Home() {
 
   const handleRecord = async () => {
     setLoading(true);
-    let audioPromise = null;
     console.log('is ', recording);
     if (recording) {
       try {
@@ -52,7 +51,7 @@ function Home() {
 
         const audioURL = URL.createObjectURL(blob);
         setMediaRecorder(null);
-        setAudioBuffers((prev) => [...prev, audioURL]);
+        setAudioBuffers((prev: any) => [...prev, audioURL]);
         setChunks([]);
       } catch (e) {
         console.log(e);
@@ -71,7 +70,7 @@ function Home() {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         const mr = new MediaRecorder(stream);
         mr.ondataavailable = (event) => {
-          setChunks((chunk) => [...chunk, event.data]);
+          setChunks((chunk: any) => [...chunk, event.data]);
         };
         mr.start(1000);
         setMediaRecorder(mr);
@@ -148,9 +147,14 @@ function Home() {
           </div>
           {audioBuffers.length > 0 && (
             <div>
-              {audioBuffers.map((audioURL, index) => (
+              {audioBuffers.map((audioURL: any) => (
                 // eslint-disable-next-line jsx-a11y/media-has-caption
-                <audio key={index} controls src={audioURL} className="mt-4" />
+                <audio
+                  key={audioURL}
+                  controls
+                  src={audioURL}
+                  className="mt-4"
+                />
               ))}
             </div>
           )}

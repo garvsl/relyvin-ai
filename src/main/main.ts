@@ -7,9 +7,9 @@ import log from 'electron-log';
 import { ensureDir, readdir, readFile, writeFile } from 'fs-extra';
 import { isEmpty } from 'lodash';
 import fs from 'fs';
+import { exec } from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { exec } from 'child_process';
 
 class AppUpdater {
   constructor() {
