@@ -9,6 +9,7 @@ import { isEmpty } from 'lodash';
 import fs from 'fs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { exec } from 'child_process';
 
 class AppUpdater {
   constructor() {
@@ -81,6 +82,39 @@ ipcMain.handle('save-audio', async (_, buffer) => {
     return { success: true, path: filePath };
   } catch (error: any) {
     console.error('Error saving audio:', error);
+    return { success: false, error: error.message };
+  }
+});
+ipcMain.handle('transcription', async (_, webmPath) => {
+  console.log(`Starting transcription for: ${webmPath}`);
+  try {
+    const scriptPath = path.join(
+      __dirname,
+      '..',
+      'package',
+      'run_transcribe.sh',
+    );
+    console.log(`Running script: ${scriptPath}`);
+
+    const result = await new Promise((resolve, reject) => {
+      exec(`"${scriptPath}" "${webmPath}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Execution error: ${error.message}`);
+          reject(error);
+          return;
+        }
+        if (stderr) {
+          console.error(`Script stderr: ${stderr}`);
+        }
+        console.log(`Script stdout: ${stdout}`);
+        resolve(stdout);
+      });
+    });
+
+    console.log(`Transcription completed successfully`);
+    return { success: true, result };
+  } catch (error: any) {
+    console.error(`Transcription failed: ${error.message}`);
     return { success: false, error: error.message };
   }
 });

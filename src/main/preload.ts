@@ -30,6 +30,9 @@ const electronHandler = {
     saveAudio: (buffer: any) => {
       return ipcRenderer.invoke('save-audio', buffer);
     },
+    transcription: (webmpath: any) => {
+      return ipcRenderer.invoke('transcription', webmpath);
+    },
   },
 };
 
