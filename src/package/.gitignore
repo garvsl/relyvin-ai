@@ -1,5 +1,7 @@
 .venv
 audio/
 transcripts/
-models/
+models/faster-whisper-small/*
+models/huggingface/*
+models/torch/*
 ./.venv
