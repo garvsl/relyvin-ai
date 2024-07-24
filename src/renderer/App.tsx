@@ -9,13 +9,14 @@ function Home() {
   const [recording, setRecording] = useState(false);
   const [chunks, setChunks] = useState<any>([]);
   const [mediaRecorder, setMediaRecorder] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
   const [audioBuffers, setAudioBuffers] = useState<any>([]);
 
   useEffect(() => {
     (async () => {
       setTranscripts(await window.electron.ipcRenderer.getTranscripts());
     })();
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     return () => {
@@ -24,6 +25,7 @@ function Home() {
   }, [audioBuffers]);
 
   const handleRecord = async () => {
+    setLoading(true);
     let audioPromise = null;
     console.log('is ', recording);
     if (recording) {
@@ -36,6 +38,14 @@ function Home() {
         const result = await window.electron.ipcRenderer.saveAudio(arrayBuffer);
         if (result.success) {
           console.log('Audio saved to:', result.path);
+          const transcribeResult =
+            await window.electron.ipcRenderer.transcription(result.path);
+
+          if (transcribeResult.success) {
+            console.log('Transcription complete:', transcribeResult.message);
+          } else {
+            console.error('Transcription failed:', transcribeResult.error);
+          }
         } else {
           console.error('Failed to save audio:', result.error);
         }
@@ -70,6 +80,12 @@ function Home() {
       }
     }
     setRecording((e) => !e);
+    setLoading(false);
+  };
+
+  const audioSubmit = (e) => {
+    console.log(e.target.files[0]);
+    console.log('submit');
   };
 
   return (
@@ -103,8 +119,9 @@ function Home() {
             Meeting Follow-Upper
           </h1>
           <div className="Hello">
+            <input type="file" onChange={audioSubmit} />
             <button
-              // disabled={screen == null}
+              disabled={loading}
               onClick={async () => {
                 await handleRecord();
                 // handleAudioRecord();
@@ -112,10 +129,21 @@ function Home() {
               className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
               type="button"
             >
-              <span className="mr-2" role="img" aria-label="books">
-                ⏺
-              </span>
-              {recording ? 'Stop Recording' : 'Start Recording'}
+              {loading ? (
+                <>
+                  <span className="mr-2" role="img" aria-label="books">
+                    ⏳
+                  </span>
+                  <span>Transcribing...</span>
+                </>
+              ) : (
+                <>
+                  <span className="mr-2" role="img" aria-label="books">
+                    ⏺
+                  </span>
+                  <span>{recording ? 'Stop' : 'Record'}</span>
+                </>
+              )}
             </button>
           </div>
           {audioBuffers.length > 0 && (
