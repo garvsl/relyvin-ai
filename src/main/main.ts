@@ -59,13 +59,9 @@ ipcMain.handle('readTranscript', async (_, args) => {
 
   const transcriptLocation = `${route}/${args}`;
 
-  console.log(transcriptLocation);
-
   const transcript = await readFile(transcriptLocation, {
     encoding: 'utf8',
   });
-
-  console.log(transcript);
 
   return transcript;
 });
