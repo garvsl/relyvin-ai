@@ -48,7 +48,7 @@ ipcMain.handle('getTranscripts', async () => {
 
     files.push('test.txt');
   }
-  console.log(files);
+  // console.log(files);
   return files;
 });
 
