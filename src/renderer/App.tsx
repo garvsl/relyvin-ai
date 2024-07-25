@@ -7,6 +7,7 @@ function Home() {
   const [transcripts, setTranscripts] = useState([]);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [recording, setRecording] = useState(false);
+  const [selected, setSelected] = useState(-1);
   const [chunks, setChunks] = useState<any>([]);
   const [mediaRecorder, setMediaRecorder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -82,19 +83,14 @@ function Home() {
     setLoading(false);
   };
 
-  const audioSubmit = (e) => {
-    console.log(e.target.files[0]);
-    console.log('submit');
-  };
-
   return (
-    <div className="flex w-[100vw] h-[100vh]">
-      <div className="flex-[0.3] flex flex-col items-center p-12 bg-gray-50">
-        <h1 className="text-4xl   text-black">Transcripts</h1>
-        <div className="flex flex-col  w-full">
+    <div className="flex w-[100vw] bg-neutral-950 h-[100vh]">
+      <div className="flex-[0.3] flex flex-col items-center p-12 bg-black">
+        <h1 className="text-4xl font-medium mb-4  text-white">Transcripts</h1>
+        <div className="flex flex-col overflow-y-scroll  w-full">
           {transcripts &&
             transcripts.length > 0 &&
-            transcripts.map((transcript) => (
+            transcripts.map((transcript, index) => (
               <button
                 type="button"
                 key={transcript}
@@ -104,8 +100,9 @@ function Home() {
                       transcript,
                     ),
                   );
+                  setSelected(index);
                 }}
-                className="bg-gray-200 text-black rounded-lg p-4 mt-4"
+                className={` text-black rounded-lg p-4 mt-4 ${index === selected ? 'bg-blue-500' : 'bg-white'}`}
               >
                 {transcript}
               </button>
@@ -114,18 +111,18 @@ function Home() {
       </div>
       <div className="flex-1 p-12">
         <div className=" flex flex-col items-center ">
-          <h1 className="text-4xl items-center  text-black">
-            Meeting Follow-Upper
-          </h1>
-          <div className="Hello">
-            <input type="file" onChange={audioSubmit} />
+          {/* <h1 className="text-5xl items-center font-medium text-white">
+            Scriber AI Mark I
+          </h1> */}
+          <div className="Hello ">
+            {/* <input type="file" onChange={audioSubmit} /> */}
             <button
               disabled={loading}
               onClick={async () => {
                 await handleRecord();
                 // handleAudioRecord();
               }}
-              className={`flex gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
+              className={`flex rounded-full w-full gap-2 p-4 ${recording ? 'bg-red-500' : 'bg-green-500'}`}
               type="button"
             >
               {loading ? (
@@ -163,7 +160,7 @@ function Home() {
           <textarea
             value={currentTranscript}
             disabled
-            className="w-full text-black h-96 p-4 bg-gray-50 resize-none rounded-xl"
+            className="w-full  h-96 p-4 bg-black text-white resize-none rounded-xl"
           />
         </div>
       </div>
