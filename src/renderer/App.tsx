@@ -1,7 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import 'tailwindcss/tailwind.css';
 import { useEffect, useState } from 'react';
+import { Button } from './components/ui/button';
 
 function Home() {
   const [transcripts, setTranscripts] = useState([]);
@@ -116,7 +116,7 @@ function Home() {
           </h1> */}
           <div className="Hello ">
             {/* <input type="file" onChange={audioSubmit} /> */}
-            <button
+            <Button
               disabled={loading}
               onClick={async () => {
                 await handleRecord();
@@ -140,7 +140,7 @@ function Home() {
                   <span>{recording ? 'Stop' : 'Record'}</span>
                 </>
               )}
-            </button>
+            </Button>
           </div>
           {audioBuffers.length > 0 && (
             <div>

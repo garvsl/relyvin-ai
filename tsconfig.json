@@ -12,6 +12,10 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "outDir": ".erb/dll"
   },
   "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
