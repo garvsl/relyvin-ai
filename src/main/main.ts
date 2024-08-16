@@ -28,7 +28,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 ipcMain.handle('getTranscripts', async () => {
-  const route = path.resolve(__dirname, '..', 'store');
+  const route = path.resolve(__dirname, 'store');
   // /${arg}.txt
   await ensureDir(route);
 
@@ -53,7 +53,7 @@ ipcMain.handle('getTranscripts', async () => {
 });
 
 ipcMain.handle('readTranscript', async (_, args) => {
-  const route = path.resolve(__dirname, '..', 'store');
+  const route = path.resolve(__dirname, 'store');
 
   await ensureDir(route);
 
@@ -68,7 +68,7 @@ ipcMain.handle('readTranscript', async (_, args) => {
 
 ipcMain.handle('save-audio', async (_, buffer) => {
   try {
-    const route = path.resolve(__dirname, '..', 'store', 'audio');
+    const route = path.resolve(__dirname, 'store', 'audio');
     fs.mkdirSync(route, { recursive: true });
     const fileName = `audio_${Date.now()}.webm`;
     const filePath = path.join(route, fileName);
@@ -84,12 +84,7 @@ ipcMain.handle('save-audio', async (_, buffer) => {
 ipcMain.handle('transcription', async (_, webmPath) => {
   console.log(`Starting transcription for: ${webmPath}`);
   try {
-    const scriptPath = path.join(
-      __dirname,
-      '..',
-      'package',
-      'run_transcribe.sh',
-    );
+    const scriptPath = path.join(__dirname, 'package', 'run_transcribe.sh');
     console.log(`Running script: ${scriptPath}`);
 
     const result = await new Promise((resolve, reject) => {

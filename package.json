@@ -1,8 +1,8 @@
 {
-  "name": "meeting-followupper",
+  "name": "relyvin-ai",
   "description": "",
   "version": "1.0.0",
-  "repository": "git@github.com:garvsl/meeting-followupper.git",
+  "repository": "git@github.com:garvsl/relyvin-ai.git",
   "author": "garvsl <garvsehgal7@gmail.com>",
   "license": "MIT",
   "main": "./src/main/main.ts",
@@ -117,8 +117,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "relyvin-ai",
+    "appId": "org.erb.relyvin-ai",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -177,12 +177,12 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "relyvin-ai",
+      "repo": "relyvin-ai"
     }
   },
   "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
+    "url": "https://opencollective.com/relyvin-ai"
   },
   "devEngines": {
     "node": ">=14.x",

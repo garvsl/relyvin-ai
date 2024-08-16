@@ -74,7 +74,7 @@ if __name__ == "__main__":
             logging.info('Starting transcription')
             segments, info = transcribe_audio(wav_file)
 
-            save_location = os.path.join(os.getcwd(), "src", "store")
+            save_location = os.path.join(os.getcwd(), "store")
             logging.info(f'Save location: {save_location}')
 
             os.makedirs(save_location, exist_ok=True)
