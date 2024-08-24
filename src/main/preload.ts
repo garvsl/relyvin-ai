@@ -33,6 +33,9 @@ const electronHandler = {
     transcription: (webmpath: any) => {
       return ipcRenderer.invoke('transcription', webmpath);
     },
+    login: (password: any) => {
+      return ipcRenderer.invoke('login', password);
+    },
   },
 };
 
