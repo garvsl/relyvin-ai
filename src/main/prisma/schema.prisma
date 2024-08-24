@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,28 +7,81 @@ datasource db {
   url      = "postgresql://goofyahhgarv:@localhost:5432/electron?schema=public"
 }
 
+model Script {
+  id      String   @id @default(uuid())
+  title   String
+  body    String
+  created DateTime @default(now())
+  userId  String
+  User    User     @relation(fields: [userId], references: [id])
+}
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-  User      User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Influencer {
+  id      String   @id @default(uuid())
+  handle  String   @unique
+  email   String   @unique
+  name    String
+  created DateTime @default(now())
+}
+
+model Email {
+  id            String   @id @default(uuid())
+  title         String   @db.VarChar(255)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  content       String?
+  needsResponse Boolean  @default(true)
+  you           Boolean  @default(false)
+  aiResponse    String?
+  profileId     String
+  Profile       Profile  @relation(fields: [profileId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Text {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  content       String?
+  needsResponse Boolean  @default(true)
+  you           Boolean  @default(false)
+  aiResponse    String?
+  profileId     String
+  Profile       Profile  @relation(fields: [profileId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Meeting {
+  id         String    @id @default(uuid())
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  agenda     String?
+  date       DateTime?
+  link       String?
+  transcript String?
+  profileId  String
+  Profile    Profile   @relation(fields: [profileId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  userId Int     @unique
-  User   User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  name      String?
+  email     String?  @unique
+  phone     String?  @unique
+  handle    String?  @unique
+  notes     String?
+  interests String?
+  quote     String?
+  status    String   @default("initial contact")
+
+  Email   Email[]
+  Text    Text[]
+  Meeting Meeting[]
+  userId  String    @unique
+  User    User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  name    String?  @db.VarChar(255)
-  email   String   @unique @db.VarChar(255)
-  Post    Post[]
-  Profile Profile?
+  id             String    @id @default(uuid())
+  name           String
+  email          String    @unique
+  hashedPassword String
+  Profile        Profile[]
+  Script         Script[]
 }
