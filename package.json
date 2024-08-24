@@ -6,6 +6,9 @@
   "author": "garvsl <garvsehgal7@gmail.com>",
   "license": "MIT",
   "main": "./src/main/main.ts",
+  "prisma": {
+    "seed": "ts-node src/main/prisma/seed.ts"
+  },
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
@@ -41,6 +44,7 @@
     "@prisma/client": "^5.18.0",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "electron-debug": "^3.2.0",
@@ -60,6 +64,7 @@
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
     "@testing-library/jest-dom": "^6.1.3",
     "@testing-library/react": "^14.0.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.5",
     "@types/lodash": "^4.17.7",
     "@types/node": "20.6.2",
