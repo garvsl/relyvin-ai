@@ -1,5 +1,5 @@
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function UserButton({ name, setSelected }: { name: string; setSelected: any }) {
@@ -28,9 +28,11 @@ function Login({
   name,
   setSelected,
   setUser,
+  user,
 }: {
   name: string;
   setSelected: any;
+  user: any;
   setUser: any;
 }) {
   const [attempts, setAttempts] = useState(3);
@@ -49,6 +51,18 @@ function Login({
     setAttempts((prev) => prev - 1);
   };
 
+  useEffect(() => {
+    if (attempts <= 0) {
+      setUser(false);
+    }
+  }, [attempts, setUser]);
+
+  useEffect(() => {
+    if (user === false) {
+      setAttempts(0);
+    }
+  }, [user]);
+
   return (
     <div className="flex flex-col gap-4">
       <button
@@ -64,9 +78,9 @@ function Login({
           Welcome {name},<br /> please login
         </label>
         <div className="flex gap-2">
-          <input disabled={attempts <= 0} id="password" type="password" />
+          <input disabled={user === false} id="password" type="password" />
           <button
-            disabled={attempts <= 0}
+            disabled={user === false}
             type="submit"
             className="p-2 border hover:opacity-80"
           >
@@ -80,7 +94,7 @@ function Login({
   );
 }
 
-export default function Auth({ setUser }: any) {
+export default function Auth({ setUser, user }: any) {
   const [selected, setSelected] = useState<any>(null);
 
   return (
@@ -95,6 +109,7 @@ export default function Auth({ setUser }: any) {
               name={selected}
               setSelected={setSelected}
               setUser={setUser}
+              user={user}
             />
           )}
         </div>

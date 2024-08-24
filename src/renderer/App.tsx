@@ -27,7 +27,7 @@ export default function App() {
         <Route element={<ProtectedRoute user={user} />}>
           <Route path="/" element={<Home />} />
         </Route>
-        <Route path="/auth" element={<Auth setUser={setUser} />} />
+        <Route path="/auth" element={<Auth setUser={setUser} user={user} />} />
       </Routes>
     </Router>
   );
