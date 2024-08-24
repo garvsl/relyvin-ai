@@ -4,12 +4,14 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { ensureDir, readdir, readFile, writeFile } from 'fs-extra';
-import { isEmpty } from 'lodash';
-import fs from 'fs';
-import { exec } from 'child_process';
+import { PrismaClient } from '@prisma/client';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import login from './handles/login';
+import getTranscripts from './handles/getTranscripts';
+import readTranscript from './handles/readTranscript';
+import transcript from './handles/transcription';
+import saveAudio from './handles/saveAudio';
 
 class AppUpdater {
   constructor() {
@@ -19,95 +21,27 @@ class AppUpdater {
   }
 }
 
+const prisma = new PrismaClient();
+
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
-
 ipcMain.handle('getTranscripts', async () => {
-  const route = path.resolve(__dirname, 'store');
-  // /${arg}.txt
-  await ensureDir(route);
-
-  const fileNames = await readdir(route, {
-    encoding: 'utf8',
-    withFileTypes: false,
-  });
-
-  const files = fileNames.filter((file) => file.endsWith('.txt'));
-
-  if (isEmpty(files)) {
-    console.info('No notes found, creating a welcome note');
-
-    await writeFile(`${route}/${'test'}.txt`, 'hello', {
-      encoding: 'utf8',
-    });
-
-    files.push('test.txt');
-  }
-  // console.log(files);
-  return files;
+  return getTranscripts();
 });
 
 ipcMain.handle('readTranscript', async (_, args) => {
-  const route = path.resolve(__dirname, 'store');
-
-  await ensureDir(route);
-
-  const transcriptLocation = `${route}/${args}`;
-
-  const transcript = await readFile(transcriptLocation, {
-    encoding: 'utf8',
-  });
-
-  return transcript;
+  return readTranscript(args);
 });
 
 ipcMain.handle('save-audio', async (_, buffer) => {
-  try {
-    const route = path.resolve(__dirname, 'store', 'audio');
-    fs.mkdirSync(route, { recursive: true });
-    const fileName = `audio_${Date.now()}.webm`;
-    const filePath = path.join(route, fileName);
-
-    const newBuffer = Buffer.from(buffer);
-    fs.writeFileSync(filePath, newBuffer);
-    return { success: true, path: filePath };
-  } catch (error: any) {
-    console.error('Error saving audio:', error);
-    return { success: false, error: error.message };
-  }
+  return saveAudio(buffer);
 });
 ipcMain.handle('transcription', async (_, webmPath) => {
-  console.log(`Starting transcription for: ${webmPath}`);
-  try {
-    const scriptPath = path.join(__dirname, 'package', 'run_transcribe.sh');
-    console.log(`Running script: ${scriptPath}`);
+  return transcript(webmPath);
+});
 
-    const result = await new Promise((resolve, reject) => {
-      exec(`"${scriptPath}" "${webmPath}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Execution error: ${error.message}`);
-          reject(error);
-          return;
-        }
-        if (stderr) {
-          console.error(`Script stderr: ${stderr}`);
-        }
-        console.log(`Script stdout: ${stdout}`);
-        resolve(stdout);
-      });
-    });
-
-    console.log(`Transcription completed successfully`);
-    return { success: true, result };
-  } catch (error: any) {
-    console.error(`Transcription failed: ${error.message}`);
-    return { success: false, error: error.message };
-  }
+ipcMain.handle('login', async (_, password) => {
+  return login(password, prisma);
 });
 
 if (process.env.NODE_ENV === 'production') {
