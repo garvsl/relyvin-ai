@@ -22,11 +22,10 @@ const login = async (password: any, prisma: any) => {
           expiresAt: new Date('9999-12-31T23:59:59Z'),
         },
       });
-      sessionStorage.setItem('sessionId', session.sid);
 
       //   now store the sessionId somewhere to get the user later
 
-      return { success: true, user };
+      return { success: true, user: { ...user, sessionId: session.sid } };
     }
     return { success: false };
   } catch (error: any) {
