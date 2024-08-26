@@ -7,7 +7,7 @@ import {
   Outlet,
 } from 'react-router-dom';
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Home from './routes/Home';
 import Auth from './routes/Auth';
 
@@ -21,6 +21,25 @@ const ProtectedRoute = ({ children, user }: any) => {
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    console.log('useEffect');
+    (async () => {
+      console.log('async');
+      const result = await sessionStorage.getItem('sessionId');
+      console.log('result', result);
+      if (result) {
+        console.log('result', result);
+        const response = await window.electron.ipcRenderer.getUser(result);
+        if (response.success) {
+          setUser(response.user);
+        }
+        console.log('response', response);
+      }
+      setUser(result);
+    })();
+  }, []);
+
   return (
     <Router>
       <Routes>
