@@ -12,6 +12,7 @@ import getTranscripts from './handles/getTranscripts';
 import readTranscript from './handles/readTranscript';
 import transcript from './handles/transcription';
 import saveAudio from './handles/saveAudio';
+import getUser from './handles/getUser';
 
 class AppUpdater {
   constructor() {
@@ -42,6 +43,10 @@ ipcMain.handle('transcription', async (_, webmPath) => {
 
 ipcMain.handle('login', async (_, password) => {
   return login(password, prisma);
+});
+
+ipcMain.handle('getUser', async (_, sessionId) => {
+  return getUser(sessionId, prisma);
 });
 
 if (process.env.NODE_ENV === 'production') {
