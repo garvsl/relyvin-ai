@@ -36,6 +36,9 @@ const electronHandler = {
     login: (password: any) => {
       return ipcRenderer.invoke('login', password);
     },
+    getUser: (sessionId: any) => {
+      return ipcRenderer.invoke('getUser', sessionId);
+    },
   },
 };
 
