@@ -3,8 +3,9 @@ const getUser = async (sessionId: any, prisma: any) => {
     const session = await prisma.session.findUnique({
       where: { sid: sessionId },
     });
+
     const user = await prisma.user.findUnique({
-      where: { id: session.data.userId },
+      where: { id: JSON.parse(session.data).userId },
     });
     return { success: true, user };
   } catch (error: any) {

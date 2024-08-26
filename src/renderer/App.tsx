@@ -20,33 +20,41 @@ const ProtectedRoute = ({ children, user }: any) => {
 };
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    console.log('useEffect');
     (async () => {
-      console.log('async');
       const result = await sessionStorage.getItem('sessionId');
-      console.log('result', result);
+      if (result === 'locked') {
+        setUser(false);
+      }
       if (result) {
-        console.log('result', result);
         const response = await window.electron.ipcRenderer.getUser(result);
         if (response.success) {
           setUser(response.user);
         }
-        console.log('response', response);
       }
-      setUser(result);
+      setLoading(false);
     })();
   }, []);
 
   return (
     <Router>
       <Routes>
-        <Route element={<ProtectedRoute user={user} />}>
-          <Route path="/" element={<Home />} />
-        </Route>
-        <Route path="/auth" element={<Auth setUser={setUser} user={user} />} />
+        {!loading ? (
+          <>
+            <Route element={<ProtectedRoute user={user} />}>
+              <Route path="/" element={<Home />} />
+            </Route>
+            <Route
+              path="/auth"
+              element={<Auth setUser={setUser} user={user} />}
+            />
+          </>
+        ) : (
+          <Route path="*" element={<div></div>} />
+        )}
       </Routes>
     </Router>
   );

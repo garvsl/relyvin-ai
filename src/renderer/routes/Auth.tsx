@@ -55,6 +55,7 @@ function Login({
   useEffect(() => {
     if (attempts <= 0) {
       setUser(false);
+      sessionStorage.setItem('sessionId', 'locked');
     }
   }, [attempts, setUser]);
 
