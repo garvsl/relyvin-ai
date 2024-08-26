@@ -53,7 +53,7 @@ export default function App() {
             />
           </>
         ) : (
-          <Route path="*" element={<div></div>} />
+          <Route path="*" element={<div />} />
         )}
       </Routes>
     </Router>
