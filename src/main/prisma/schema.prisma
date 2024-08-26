@@ -85,3 +85,11 @@ model User {
   Profile        Profile[]
   Script         Script[]
 }
+
+model Session {
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  data      String  
+  expiresAt DateTime
+}
+

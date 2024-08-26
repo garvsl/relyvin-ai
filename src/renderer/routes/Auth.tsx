@@ -45,6 +45,7 @@ function Login({
       e.target.password.value,
     );
     if (result.success) {
+      sessionStorage.setItem('sessionId', result.user.sessionId);
       setUser(result.user);
       navigate('/');
     }
