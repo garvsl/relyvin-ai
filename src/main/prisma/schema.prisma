@@ -24,6 +24,12 @@ model Influencer {
   created DateTime @default(now())
 }
 
+model Username {
+  id      String   @id @default(uuid())
+  handle  String   @unique
+  created DateTime @default(now())
+}
+
 model Email {
   id            String   @id @default(uuid())
   title         String   @db.VarChar(255)
