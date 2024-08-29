@@ -27,7 +27,7 @@ model Influencer {
 model Username {
   id      String   @id @default(uuid())
   handle  String   @unique
-  checked Boolean @default(false)
+  checked Boolean  @default(false)
   created DateTime @default(now())
 }
 
@@ -84,6 +84,15 @@ model Profile {
   User    User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model Scraper {
+  id       String @id @default(uuid())
+  email    String
+  password String
+  cookie   String
+  userId   String @unique
+  User     User   @relation(fields: [userId], references: [id])
+}
+
 model User {
   id             String    @id @default(uuid())
   name           String
@@ -91,13 +100,12 @@ model User {
   hashedPassword String
   Profile        Profile[]
   Script         Script[]
+  Scraper        Scraper[]
 }
 
 model Session {
   id        String   @id @default(cuid())
   sid       String   @unique
-  data      String  
+  data      String
   expiresAt DateTime
 }
-
-
