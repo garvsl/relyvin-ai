@@ -55,17 +55,32 @@ ${user.name}`,
   const influencersJson = JSON.parse(
     fs.readFileSync('influencers.json', 'utf-8'),
   );
-  influencersJson.map(async (influencer: any) => {
-    await prisma.influencer.upsert({
-      where: { email: influencer.email },
-      update: {},
-      create: {
-        handle: influencer.handle,
-        email: influencer.email,
-        name: influencer.name,
-        created: new Date(influencer.created),
-      },
-    });
+  const influencers = influencersJson.map(
+    (inf: { handle: string; email: string; name: string; created: string }) => {
+      return {
+        handle: inf.handle,
+        email: inf.email,
+        name: inf.name,
+        created: new Date(inf.created),
+      };
+    },
+  );
+
+  await prisma.influencer.createMany({
+    data: influencers,
+    skipDuplicates: true,
+  });
+
+  const usernamesFile = fs.readFileSync('usernames.txt', 'utf-8').split('\n');
+  const usernames = usernamesFile.map((name) => {
+    return {
+      handle: name,
+    };
+  });
+
+  await prisma.username.createMany({
+    data: usernames,
+    skipDuplicates: true,
   });
 }
 
