@@ -27,6 +27,7 @@ model Influencer {
 model Username {
   id      String   @id @default(uuid())
   handle  String   @unique
+  checked Boolean @default(false)
   created DateTime @default(now())
 }
 
@@ -98,4 +99,5 @@ model Session {
   data      String  
   expiresAt DateTime
 }
+
 
