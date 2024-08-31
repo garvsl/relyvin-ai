@@ -80,7 +80,7 @@ model Profile {
   Email   Email[]
   Text    Text[]
   Meeting Meeting[]
-  userId  String    @unique
+  userId  String    
   User    User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -89,7 +89,7 @@ model Scraper {
   email    String
   password String
   cookie   String?
-  userId   String  @unique
+  userId   String  
   User     User    @relation(fields: [userId], references: [id])
 }
 
