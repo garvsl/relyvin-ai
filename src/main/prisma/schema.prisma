@@ -85,12 +85,12 @@ model Profile {
 }
 
 model Scraper {
-  id       String @id @default(uuid())
+  id       String  @id @default(uuid())
   email    String
   password String
-  cookie   String
-  userId   String @unique
-  User     User   @relation(fields: [userId], references: [id])
+  cookie   String?
+  userId   String  @unique
+  User     User    @relation(fields: [userId], references: [id])
 }
 
 model User {
