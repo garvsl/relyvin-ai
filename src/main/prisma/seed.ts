@@ -18,7 +18,7 @@ async function main() {
     },
     {
       email: 'moh@relyvin.com',
-      name: 'Mohammad',
+      name: 'Moh',
       password: 'zohhyg-bezkyh-fyzfI8',
     },
   ];
@@ -36,7 +36,7 @@ async function main() {
         Script: {
           create: {
             title: 'Personalized Package',
-            body: `Hey {},
+            body: `Hi {},
 
 I really liked your Instagram, as your content & vibe really aligns with our brand’s vision at relyvin (https://www.relyvin.com), thus I am reaching out!
 
