@@ -35,14 +35,14 @@ async function main() {
         hashedPassword,
         Script: {
           create: {
-            title: 'Personalized Package',
+            title: 'Personalized Partnership',
             body: `Hi {},
 
 I really liked your Instagram, as your content & vibe really aligns with our brand’s vision at relyvin (https://www.relyvin.com), thus I am reaching out!
 
-We help emerging influencers who would like to travel to Turkey secure exclusive medical tourism packages, without any hassle or compromising on quality.
+We help influencers who would like to travel to Turkey secure exclusive medical tourism packages that are personalized--without compromising on any quality.
 
-Let me know if you are interested in this opportunity. Looking forward to hearing from you! :)
+I'd love to chat, let me know if you are interested in this opportunity. Looking forward to hearing from you! :)
 
 Best regards,
 ${user.name}`,
@@ -71,18 +71,32 @@ ${user.name}`,
     skipDuplicates: true,
   });
 
-  const usernamesFile = fs.readFileSync('usernames.txt', 'utf-8').split('\n');
-  const usernames = usernamesFile.map((name) => {
-    return {
-      handle: name,
-    };
-  });
+  const usernamesJson = JSON.parse(fs.readFileSync('usernames.json', 'utf-8'));
+  const usernames = usernamesJson.map(
+    (inf: {
+      id: string;
+      handle: string;
+      created: string;
+      checked: boolean;
+    }) => {
+      return {
+        id: inf.id,
+        handle: inf.handle,
+        checked: inf.checked,
+        created: new Date(inf.created),
+      };
+    },
+  );
 
   await prisma.username.createMany({
     data: usernames,
     skipDuplicates: true,
   });
 }
+
+// need to update influencers json
+// need to do instead usernames json
+// thats it then seed to aws
 
 main()
   // eslint-disable-next-line promise/always-return
