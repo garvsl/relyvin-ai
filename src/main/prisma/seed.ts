@@ -81,7 +81,7 @@ ${user.name}`,
     }) => {
       return {
         id: inf.id,
-        handle: inf.handle,
+        handle: String(inf.handle),
         checked: inf.checked,
         created: new Date(inf.created),
       };

@@ -4,8 +4,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://goofyahhgarv:@localhost:5432/electron?schema=public"
+  url      = "postgresql://postgres:OnDAshAcfe3Hxy0A5eGz@relyvin.cpuie2846z51.us-east-1.rds.amazonaws.com:5432/relyvinai"
 }
+
 
 model Script {
   id      String   @id @default(uuid())
@@ -109,3 +110,4 @@ model Session {
   data      String
   expiresAt DateTime
 }
+
